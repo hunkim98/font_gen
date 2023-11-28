@@ -17,7 +17,7 @@ export default function Home() {
   const onClickGenerate = () => {
     const dotting = dottingRef.current;
     if (!dotting) return;
-    const layers = dotting.getLayersAsArray();
+    const layers = dottingRef.current.getLayersAsArray();
     const layer = layers[0];
     if (!layer) return;
     const data = layer.data;
@@ -46,22 +46,44 @@ export default function Home() {
       .then((res) => {
         const data = res.data as PostStrokeResponseDto;
         const svgs = data.result;
-        const svg1 = svgs[0];
-        // draw svg in cavas
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
-        // Parse the SVG string
-        const img1 = new Image();
-        img1.onload = function () {
+        const images = data.images;
+        const image1 = images[0];
+        // console.log(image1);
+        const byteCharacters = atob(image1);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: "image/png" });
+        const url = URL.createObjectURL(blob);
+        const img = new Image();
+        img.src = url;
+        img.onload = function () {
+          const canvas = canvasRef.current;
+          if (!canvas) return;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) return;
           ctx.clearRect(0, 0, 500, 500);
-          ctx.drawImage(img1, 0, 0, 500, 500);
+          ctx.drawImage(img, 0, 0, 500, 500);
         };
-        console.log(svg1[0]);
-        img1.src =
-          "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg1);
-        setSvgResults(svgs);
+        // const svg1 = svgs[0];
+        // // draw svg in cavas
+        // const canvas = canvasRef.current;
+        // if (!canvas) return;
+        // const ctx = canvas.getContext("2d");
+        // if (!ctx) return;
+        // // Parse the SVG string
+        // const img1 = new Image();
+        // img1.onload = function () {
+        //   ctx.clearRect(0, 0, 500, 500);
+        //   ctx.drawImage(img1, 0, 0, 500, 500);
+        // };
+        // console.log(svg1[0]);
+        // img1.src =
+        //   "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg1);
+        // setSvgResults(svgs);
+
         setIsLoading(false);
       })
       .catch((err) => {
