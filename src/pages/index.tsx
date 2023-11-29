@@ -8,12 +8,26 @@ import { PostStrokeResponseDto } from "@/types/PostStroke/response/post.stroke.r
 
 const inter = Inter({ subsets: ["latin"] });
 
+const fontStyles: Array<{ name: string; url: string }> = [
+  {
+    name: "NanumPenScript",
+    url: "https://font-gen-1.vercel.app/",
+  },
+  {
+    name: "Agbalumo-Regular",
+    url: "https://font-gen-agbalumo-regular.vercel.app/",
+  },
+];
+
 export default function Home() {
   const dottingRef = useRef<DottingRef>(null);
   const { changeBrushPattern } = useBrush(dottingRef);
   const [svgResults, setSvgResults] = useState<Array<string>>([]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [selectedFontStyleUrl, setSelectedFontStyleUrl] = useState<string>(
+    fontStyles[0].url
+  );
   const onClickGenerate = () => {
     const dotting = dottingRef.current;
     if (!dotting) return;
@@ -42,7 +56,7 @@ export default function Home() {
     };
     setIsLoading(true);
     axios
-      .post("/gen", body)
+      .post(selectedFontStyleUrl, body)
       .then((res) => {
         const data = res.data as PostStrokeResponseDto;
         const svgs = data.result;
@@ -118,6 +132,15 @@ export default function Home() {
         </div>
         <div className="">
           <h3 className="text-xl font-bold">Draw Skeleton</h3>
+          <select
+            className="w-full text-black px-4 py-1 rounded mb-2"
+            value={selectedFontStyleUrl}
+            onChange={(el) => setSelectedFontStyleUrl(el.target.value)}
+          >
+            {fontStyles.map((fontStyle) => {
+              return <option value={fontStyle.url}>{fontStyle.name}</option>;
+            })}
+          </select>
           <Dotting
             ref={dottingRef}
             width={300}
