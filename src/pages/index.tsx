@@ -17,6 +17,10 @@ const fontStyles: Array<{ name: string; url: string }> = [
     name: "Agbalumo-Regular",
     url: "https://font-gen-agbalumo-regular.vercel.app/",
   },
+  {
+    name: "Hs-Cherry-Blossom",
+    url: "https://font-gen-hs-bombaram2.vercel.app/",
+  },
 ];
 
 export default function Home() {
@@ -138,7 +142,11 @@ export default function Home() {
             onChange={(el) => setSelectedFontStyleUrl(el.target.value)}
           >
             {fontStyles.map((fontStyle) => {
-              return <option value={fontStyle.url}>{fontStyle.name}</option>;
+              return (
+                <option key={fontStyle.url} value={fontStyle.url}>
+                  {fontStyle.name}
+                </option>
+              );
             })}
           </select>
           <Dotting
